@@ -1,14 +1,24 @@
-# Use official Python image as base
-FROM python:3.12-slim
+FROM ubuntu:24.04
 
-# Set working directory inside container
+# Install dependencies
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip git curl && \
+    ln -s /usr/bin/python3 /usr/bin/python
+
+# Set workdir
 WORKDIR /app
 
-# Copy all project files into container
-COPY . /app
+# Copy your project
+COPY . .
+# Create virtual environment
+RUN python3 -m venv /opt/venv
 
-# Install dependencies (if you have any, for now skip if none)
-# RUN pip install --no-cache-dir -r requirements.txt
+# Use the virtual environment's pip
+RUN /opt/venv/bin/pip install --upgrade pip
+RUN /opt/venv/bin/pip install uv
 
-# Default command when container starts
+# Optionally set PATH so the virtualenv python is default
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Default shell
 CMD ["bash"]
